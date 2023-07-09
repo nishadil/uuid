@@ -1,0 +1,21 @@
+{
+    "name": "nishadil/uuid",
+    "description": "A PHP library for generating and working with universally unique identifiers.",
+    "type": "library",
+    "require": {
+        "php": "8.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Nishadil\\Uuid\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Nishadil Dev Team",
+            "email": "opensource@nishadil.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
