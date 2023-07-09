@@ -1,6 +1,6 @@
 {
     "name": "nishadil/uuid",
-    "description": "A PHP library for generating and working with universally unique identifiers.",
+    "description": "A PHP library for generating universally unique identifiers (UUID).",
     "type": "library",
     "require": {
         "php": "8.0"
