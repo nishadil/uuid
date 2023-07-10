@@ -8,7 +8,7 @@
 
 ## What is a UUID?
 
-A UUID (short for Universally Unique IDentifier) ​​is a 36-character alphanumeric string that can be used to identify information. 
+A UUID _(short for Universally Unique IDentifier)_ ​​is a 36-character alphanumeric string that can be used to identify information. 
 For example, they are commonly used to identify rows of data in database tables, with each row assigned a specific UUID.
 
 Here is an example of a UUID: `acde070d-8c4c-4f0d-9d8a-162843c10333`
