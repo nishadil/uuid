@@ -6,14 +6,14 @@
 
 
 
-- Version 1: UUIDs using a timestamp and monotonic counter.
-- Version 2: UUIDs 
-- Version 3: UUIDs based on the MD5 hash of some data.
-- Version 4: UUIDs with random data.
-- Version 5: UUIDs based on the SHA1 hash of some data.
-- Version 6: UUIDs using a timestamp and monotonic counter.
-- Version 7: UUIDs using a Unix timestamp.
-- Version 8: UUIDs using user-defined data.
+- Version 1: UUIDs using a timestamp and monotonic counter. `under development`
+- Version 2: UUIDs `under development`
+- Version 3: UUIDs based on the MD5 hash of some data. `under development`
+- Version 4: UUIDs with random data. `under development`
+- Version 5: UUIDs based on the SHA1 hash of some data. `under development`
+- Version 6: UUIDs using a timestamp and monotonic counter. `under development`
+- Version 7: UUIDs using a Unix timestamp. `under development`
+- Version 8: UUIDs using user-defined data. `under development`
 
 
 
