@@ -4,6 +4,8 @@
     <strong>A PHP library for generating universally unique identifiers (UUID).</strong>
 </p>
 
+
+
 ## What is a UUID?
 
 A UUID (short for Universally Unique IDentifier) ​​is a 36-character alphanumeric string that can be used to identify information. 
@@ -15,26 +17,23 @@ One reason UUIDs are so widely used is that they are likely to be globally uniqu
 
 _(Technically it's not impossible that the same UUID you generate could be used elsewhere, but it's highly unlikely as there are 340,282,366,920,938,463,463,374,607,431,768,211,456 possible different UUIDs.)_
 
-- Version 1: UUIDs using date-time and MAC address. `under development`
-- Version 2: UUIDs using date-time and MAC address, DCE security version. `under development`
-- Version 3: UUIDs based on the MD5 hash of some data. `under development`
-- Version 4: UUIDs with random data. `under development`
-- Version 5: UUIDs based on the SHA1 hash of some data. `under development`
-- Version 6: UUIDs using a timestamp and monotonic counter. `under development`
-- Version 7: UUIDs using a Unix timestamp. `under development`
-- Version 8: UUIDs using user-defined data. `under development`
+
 
 
 ## UUIDs version status
 
-| Versions | Status |
-| ------ | ------ |
-| v1 | `under development` |
-| v2 | `under development` |
-| v3 | `under development` |
-| v4 | `under development` |
-| v5 | `under development` |
-| v6 | `under development` |
+| Versions | Status | Info |
+| ------ | ------ | ------ |
+| v1 | `under development` | UUIDs using date-time and MAC address |
+| v2 | `under development` | UUIDs using date-time and MAC address, DCE security version. |
+| v3 | `under development` | UUIDs based on the MD5 hash of some data. |
+| v4 | `under development` | UUIDs with random data. |
+| v5 | `under development` | UUIDs based on the SHA1 hash of some data. |
+| v6 | `under development` | UUIDs using a timestamp and monotonic counter. |
+| v7 | `under development` | UUIDs using a Unix timestamp. |
+| v8 | `under development` | UUIDs using user-defined data. |
+
+
 
 
 ## Installation
@@ -44,6 +43,7 @@ This library can be installed using [Composer][]. To install, please use followi
 ```bash
 composer require nishadil/uuid
 ```
+
 
 
 ## License
