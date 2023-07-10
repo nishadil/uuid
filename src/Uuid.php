@@ -20,7 +20,7 @@ class Uuid{
 
     
     
-    public string $NISHADIL_UUID_NODE; 
+    public string $NISHADIL_UUID_NODE;
 
 
 
