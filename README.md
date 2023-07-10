@@ -6,8 +6,8 @@
 
 
 
-- Version 1: UUIDs using a timestamp and monotonic counter. `under development`
-- Version 2: UUIDs `under development`
+- Version 1: UUIDs using date-time and MAC address. `under development`
+- Version 2: UUIDs using date-time and MAC address, DCE security version. `under development`
 - Version 3: UUIDs based on the MD5 hash of some data. `under development`
 - Version 4: UUIDs with random data. `under development`
 - Version 5: UUIDs based on the SHA1 hash of some data. `under development`
