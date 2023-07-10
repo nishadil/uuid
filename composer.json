@@ -3,7 +3,7 @@
     "description": "A PHP library for generating universally unique identifiers (UUID).",
     "type": "library",
     "require": {
-        "php": "8.0"
+        "php": "^8.0"
     },
     "license": "MIT",
     "autoload": {

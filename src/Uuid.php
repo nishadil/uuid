@@ -4,6 +4,10 @@ namespace Nishadil\Uuid;
 
 use Nishadil\Uuid\Exception\InvalidArgumentException;
 
+use function sprintf;
+use function random_int;
+
+
 class Uuid{
 
 
@@ -14,7 +18,13 @@ class Uuid{
     */
     public int $NISHADIL_UUID_VERSION;
 
+    
+    
+    public string $NISHADIL_UUID_NODE;
 
+
+
+    public string $NISHADIL_UUID_PATTERN = '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$';
 
     
 
@@ -22,7 +32,7 @@ class Uuid{
 
 
     function __construct() {
-
+        
     }
 
 
@@ -35,9 +45,12 @@ class Uuid{
     |
     | UUID Standard : UUIDs using a timestamp and monotonic counter.
     |
+    | @params string|null #node
+    | @return string
+    | @throws Exception
     */
-    public function v1() {
-        
+    public function v1( ?string $node = null ): string {
+
     }
 
 
@@ -140,6 +153,53 @@ class Uuid{
     */
     public function v8() {
         
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+    |----------------------------------------------------------------
+    | getNode function
+    |----------------------------------------------------------------
+    |
+    | @return string
+    |
+    */
+    public static function getNode(): string {
+        
+        if( !self::$NISHADIL_UUID_NODE ):
+            self::$NISHADIL_UUID_NODE = self::setNode();
+        endif;
+        
+        return self::$NISHADIL_UUID_NODE;
+
+    }
+
+
+
+    /*
+    |----------------------------------------------------------------
+    | setNode function
+    |----------------------------------------------------------------
+    |
+    | @return void
+    |
+    */
+    public static function setNode(): void {
+        self::$NISHADIL_UUID_NODE = sprintf('%06x%06x',
+            random_int(0, 0xffffff) | 0x010000,
+            random_int(0, 0xffffff)
+        );
     }
 
 }
