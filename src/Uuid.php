@@ -16,15 +16,15 @@ class Uuid{
     | Class variables using for UUID generation
     |
     */
-    public int $NISHADIL_UUID_VERSION;
+    protected static int $NISHADIL_UUID_VERSION;
 
     
     
-    public string $NISHADIL_UUID_NODE;
+    protected static string $NISHADIL_UUID_NODE;
 
 
 
-    public string $NISHADIL_UUID_PATTERN = '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$';
+    protected static string $NISHADIL_UUID_PATTERN = '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$';
 
     
 
@@ -32,9 +32,7 @@ class Uuid{
 
 
     function __construct() {
-        if( !self::$NISHADIL_UUID_NODE ):
-            self::$NISHADIL_UUID_NODE = self::setNode();
-        endif;
+        self::setNode();
     }
 
 
@@ -50,8 +48,9 @@ class Uuid{
     | @return string
     | @throws Exception
     */
-    public function v1(): string {
+    public static function v1(): self {
         self::setUUIDversion(1);
+        return new self;
     }
     
     
@@ -68,8 +67,9 @@ class Uuid{
     | @return string
     | @throws Exception
     */
-    public function v2(): string {
+    public static function v2(): self {
         self::setUUIDversion(2);
+        return new self;
     }
     
     
@@ -189,7 +189,7 @@ class Uuid{
     |
     */
     public function get(): string {
-        return self::getUUIDversion();
+        return self::getNode();
     }
 
 
@@ -215,7 +215,7 @@ class Uuid{
     public static function getNode(): string {
         
         if( !self::$NISHADIL_UUID_NODE ):
-            self::$NISHADIL_UUID_NODE = self::setNode();
+            self::setNode();
         endif;
         
         return self::$NISHADIL_UUID_NODE;
@@ -253,7 +253,7 @@ class Uuid{
     public static function getUUIDversion(): string {
         
         if( !self::$NISHADIL_UUID_VERSION ):
-            self::$NISHADIL_UUID_VERSION = self::setUUIDversion();
+            self::setUUIDversion();
         endif;
         
         return self::$NISHADIL_UUID_VERSION;
@@ -271,7 +271,7 @@ class Uuid{
     |
     */
     public static function setUUIDversion(int $version = 1): void {
-        self::$NISHADIL_UUID_NODE = $version;
+        self::$NISHADIL_UUID_VERSION = $version;
     }
 
 }
