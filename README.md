@@ -25,6 +25,17 @@ _(Technically it's not impossible that the same UUID you generate could be used 
 - Version 8: UUIDs using user-defined data. `under development`
 
 
+## UUIDs version status
+
+| Versions | Status |
+| ------ | ------ |
+| v1 | `under development` |
+| v2 | `under development` |
+| v3 | `under development` |
+| v4 | `under development` |
+| v5 | `under development` |
+| v6 | `under development` |
+
 
 ## Installation
 
