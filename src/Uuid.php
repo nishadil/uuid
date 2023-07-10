@@ -32,7 +32,9 @@ class Uuid{
 
 
     function __construct() {
-
+        if( !self::$NISHADIL_UUID_NODE ):
+            self::$NISHADIL_UUID_NODE = self::setNode();
+        endif;
     }
 
 
@@ -45,18 +47,17 @@ class Uuid{
     |
     | UUID Standard : UUIDs using a timestamp and monotonic counter.
     |
-    | @params string|null #node
     | @return string
     | @throws Exception
     */
-    public function v1( ?string $node = null ): string {
-
+    public function v1(): string {
+        self::setUUIDversion(1);
     }
-
-
-
-
-
+    
+    
+    
+    
+    
     /*
     |----------------------------------------------------------------
     | UUID generation using UUID standard version 2
@@ -64,13 +65,15 @@ class Uuid{
     |
     | UUID Standard : 
     |
+    | @return string
+    | @throws Exception
     */
-    public function v2() {
-        
+    public function v2(): string {
+        self::setUUIDversion(2);
     }
-
-
-
+    
+    
+    
     /*
     |----------------------------------------------------------------
     | UUID generation using UUID standard version 3
@@ -78,11 +81,13 @@ class Uuid{
     |
     | UUID Standard : UUIDs based on the MD5 hash of some data.
     |
+    | @return string
+    | @throws Exception
     */
-    public function v3() {
-        
+    public function v3(): string {
+        self::setUUIDversion(3);
     }
-
+    
 
 
     /*
@@ -92,9 +97,11 @@ class Uuid{
     |
     | UUID Standard : UUIDs with random data.
     |
+    | @return string
+    | @throws Exception
     */
-    public function v4() {
-        
+    public function v4(): string {
+        self::setUUIDversion(4);
     }
 
 
@@ -106,9 +113,11 @@ class Uuid{
     |
     | UUID Standard : UUIDs based on the SHA1 hash of some data.
     |
+    | @return string
+    | @throws Exception
     */
-    public function v5() {
-        
+    public function v5(): string {
+        self::setUUIDversion(5);
     }
 
 
@@ -121,9 +130,11 @@ class Uuid{
     |
     | UUID Standard : UUIDs using a timestamp and monotonic counter.
     |
+    | @return string
+    | @throws Exception
     */
-    public function v6() {
-        
+    public function v6(): string {
+        self::setUUIDversion(6);
     }
 
 
@@ -135,9 +146,11 @@ class Uuid{
     |
     | UUID Standard : UUIDs using a Unix timestamp.
     |
+    | @return string
+    | @throws Exception
     */
-    public function v7() {
-        
+    public function v7(): string {
+        self::setUUIDversion(7);
     }
 
 
@@ -150,9 +163,33 @@ class Uuid{
     |
     | UUID Standard : UUIDs using user-defined data.
     |
+    | @return string
+    | @throws Exception
     */
-    public function v8() {
-        
+    public function v8(): string {
+        self::setUUIDversion(8);
+    }
+
+
+
+
+
+
+
+
+
+
+    /*
+    |----------------------------------------------------------------
+    | get function to generate and return UUID
+    |----------------------------------------------------------------
+    |
+    | @return string
+    | @throws Exception
+    |
+    */
+    public function get(): string {
+        return self::getUUIDversion();
     }
 
 
@@ -200,6 +237,41 @@ class Uuid{
             random_int(0, 0xffffff) | 0x010000,
             random_int(0, 0xffffff)
         );
+    }
+
+
+
+
+    /*
+    |----------------------------------------------------------------
+    | getUUIDversion function
+    |----------------------------------------------------------------
+    |
+    | @return string
+    |
+    */
+    public static function getUUIDversion(): string {
+        
+        if( !self::$NISHADIL_UUID_VERSION ):
+            self::$NISHADIL_UUID_VERSION = self::setUUIDversion();
+        endif;
+        
+        return self::$NISHADIL_UUID_VERSION;
+
+    }
+
+
+
+    /*
+    |----------------------------------------------------------------
+    | setUUIDversion function
+    |----------------------------------------------------------------
+    |
+    | @return void
+    |
+    */
+    public static function setUUIDversion(int $version = 1): void {
+        self::$NISHADIL_UUID_NODE = $version;
     }
 
 }
