@@ -29,8 +29,11 @@ class Uuid{
 
 
     /*
-    |
+    |----------------------------------------------------------------
     | UUID generation using UUID standard version 1
+    |----------------------------------------------------------------
+    |
+    | UUID Standard : UUIDs using a timestamp and monotonic counter.
     |
     */
     public function v1() {
@@ -42,8 +45,11 @@ class Uuid{
 
 
     /*
-    |
+    |----------------------------------------------------------------
     | UUID generation using UUID standard version 2
+    |----------------------------------------------------------------
+    |
+    | UUID Standard : 
     |
     */
     public function v2() {
@@ -53,8 +59,11 @@ class Uuid{
 
 
     /*
-    |
+    |----------------------------------------------------------------
     | UUID generation using UUID standard version 3
+    |----------------------------------------------------------------
+    |
+    | UUID Standard : UUIDs based on the MD5 hash of some data.
     |
     */
     public function v3() {
@@ -64,8 +73,11 @@ class Uuid{
 
 
     /*
-    |
+    |----------------------------------------------------------------
     | UUID generation using UUID standard version 4
+    |----------------------------------------------------------------
+    |
+    | UUID Standard : UUIDs with random data.
     |
     */
     public function v4() {
@@ -75,8 +87,11 @@ class Uuid{
 
 
     /*
-    |
+    |----------------------------------------------------------------
     | UUID generation using UUID standard version 5
+    |----------------------------------------------------------------
+    |
+    | UUID Standard : UUIDs based on the SHA1 hash of some data.
     |
     */
     public function v5() {
@@ -87,8 +102,11 @@ class Uuid{
 
 
     /*
-    |
+    |----------------------------------------------------------------
     | UUID generation using UUID standard version 6
+    |----------------------------------------------------------------
+    |
+    | UUID Standard : UUIDs using a timestamp and monotonic counter.
     |
     */
     public function v6() {
@@ -98,8 +116,11 @@ class Uuid{
 
 
     /*
-    |
+    |----------------------------------------------------------------
     | UUID generation using UUID standard version 7
+    |----------------------------------------------------------------
+    |
+    | UUID Standard : UUIDs using a Unix timestamp.
     |
     */
     public function v7() {
@@ -110,8 +131,11 @@ class Uuid{
 
 
     /*
+    |----------------------------------------------------------------
+    | UUID generation using UUID standard version 8
+    |----------------------------------------------------------------
     |
-    | UUID generation using UUID standard version 8 
+    | UUID Standard : UUIDs using user-defined data.
     |
     */
     public function v8() {
