@@ -1,4 +1,4 @@
-![nishadil/uuid](https://avatars.githubusercontent.com/u/3072416?s=100&v=4)
+![nishadil/uuid](https://avatars.githubusercontent.com/u/3072416?s=50&v=4)
 <h1 align="center">
     nishadil/uuid
 </h1>
