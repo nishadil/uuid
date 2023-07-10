@@ -7,6 +7,7 @@
 
 
 - Version 1: UUIDs using a timestamp and monotonic counter.
+- Version 2: UUIDs 
 - Version 3: UUIDs based on the MD5 hash of some data.
 - Version 4: UUIDs with random data.
 - Version 5: UUIDs based on the SHA1 hash of some data.
