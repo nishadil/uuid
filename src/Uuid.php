@@ -6,6 +6,7 @@ use Nishadil\Uuid\Exception\InvalidArgumentException;
 
 use function sprintf;
 use function random_int;
+use function hex2bin;
 
 
 class Uuid{
@@ -16,23 +17,35 @@ class Uuid{
     | Class variables using for UUID generation
     |
     */
+    protected static array $NISHADIL_UUID_PREPDATA;
+
+
+
     protected static int $NISHADIL_UUID_VERSION;
 
-    
-    
+
+
     protected static string $NISHADIL_UUID_NODE;
+
+
+
+    protected static int $NISHADIL_UUID_CLOCKSEQ;
 
 
 
     protected static string $NISHADIL_UUID_PATTERN = '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$';
 
-    
 
+
+    protected static ?Factory $NISHADIL_UUID_FACTORY = null;
 
 
 
     function __construct() {
         self::setNode();
+        self::setFactory();
+        self::$NISHADIL_UUID_PREPDATA = [];
+        self::$NISHADIL_UUID_CLOCKSEQ = random_int(0, 0x3fff);
     }
 
 
@@ -52,17 +65,17 @@ class Uuid{
         self::setUUIDversion(1);
         return new self;
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     /*
     |----------------------------------------------------------------
     | UUID generation using UUID standard version 2
     |----------------------------------------------------------------
     |
-    | UUID Standard : 
+    | UUID Standard :
     |
     | @return string
     | @throws Exception
@@ -71,9 +84,9 @@ class Uuid{
         self::setUUIDversion(2);
         return new self;
     }
-    
-    
-    
+
+
+
     /*
     |----------------------------------------------------------------
     | UUID generation using UUID standard version 3
@@ -84,10 +97,11 @@ class Uuid{
     | @return string
     | @throws Exception
     */
-    public function v3(): string {
+    public static function v3(): self {
         self::setUUIDversion(3);
+        return new self;
     }
-    
+
 
 
     /*
@@ -100,8 +114,9 @@ class Uuid{
     | @return string
     | @throws Exception
     */
-    public function v4(): string {
+    public static function v4(): self {
         self::setUUIDversion(4);
+        return new self;
     }
 
 
@@ -116,8 +131,9 @@ class Uuid{
     | @return string
     | @throws Exception
     */
-    public function v5(): string {
+    public static function v5(): self {
         self::setUUIDversion(5);
+        return new self;
     }
 
 
@@ -133,8 +149,9 @@ class Uuid{
     | @return string
     | @throws Exception
     */
-    public function v6(): string {
+    public static function v6(): self {
         self::setUUIDversion(6);
+        return new self;
     }
 
 
@@ -149,8 +166,9 @@ class Uuid{
     | @return string
     | @throws Exception
     */
-    public function v7(): string {
+    public static function v7(): self {
         self::setUUIDversion(7);
+        return new self;
     }
 
 
@@ -166,8 +184,9 @@ class Uuid{
     | @return string
     | @throws Exception
     */
-    public function v8(): string {
+    public static function v8(): self {
         self::setUUIDversion(8);
+        return new self;
     }
 
 
@@ -188,8 +207,9 @@ class Uuid{
     | @throws Exception
     |
     */
-    public function get(): string {
-        return self::getNode();
+    public function get(): ?string {
+        // return self::getFactory()->generate( self::getUUIDversion(), self::getNode() );
+        return self::getFactory()->generate( self::getPrepareData() );
     }
 
 
@@ -213,11 +233,11 @@ class Uuid{
     |
     */
     public static function getNode(): string {
-        
+
         if( !self::$NISHADIL_UUID_NODE ):
             self::setNode();
         endif;
-        
+
         return self::$NISHADIL_UUID_NODE;
 
     }
@@ -237,6 +257,7 @@ class Uuid{
             random_int(0, 0xffffff) | 0x010000,
             random_int(0, 0xffffff)
         );
+        // self::NISHADIL_UUID_NODE = hex2bin(self::NISHADIL_UUID_NODE);
     }
 
 
@@ -251,11 +272,11 @@ class Uuid{
     |
     */
     public static function getUUIDversion(): string {
-        
+
         if( !self::$NISHADIL_UUID_VERSION ):
             self::setUUIDversion();
         endif;
-        
+
         return self::$NISHADIL_UUID_VERSION;
 
     }
@@ -272,6 +293,84 @@ class Uuid{
     */
     public static function setUUIDversion(int $version = 1): void {
         self::$NISHADIL_UUID_VERSION = $version;
+    }
+
+
+
+
+    /*
+    |----------------------------------------------------------------
+    | getFactory function
+    |----------------------------------------------------------------
+    |
+    | @return instanceOf Factory
+    |
+    */
+    public static function getFactory(): Factory {
+
+        if( !self::$NISHADIL_UUID_FACTORY ):
+            self::setFactory();
+        endif;
+
+        return self::$NISHADIL_UUID_FACTORY;
+
+    }
+
+
+
+    /*
+    |----------------------------------------------------------------
+    | setFactory function
+    |----------------------------------------------------------------
+    |
+    | @return void
+    |
+    */
+    public static function setFactory(): void {
+        self::$NISHADIL_UUID_FACTORY = new Factory;
+    }
+
+
+
+
+    /*
+    |----------------------------------------------------------------
+    | setPrepareData function
+    |----------------------------------------------------------------
+    |
+    | @return void
+    |
+    */
+    public static function setPrepareData(): void {
+
+        switch (self::$NISHADIL_UUID_VERSION) {
+          case 1:
+            self::$NISHADIL_UUID_PREPDATA = ['NISHADIL_UUID_VERSION'=>self::$NISHADIL_UUID_VERSION,'NISHADIL_UUID_NODE'=>self::$NISHADIL_UUID_NODE,'NISHADIL_UUID_CLOCKSEQ'=>self::$NISHADIL_UUID_CLOCKSEQ];
+            break;
+          default:
+            self::$NISHADIL_UUID_PREPDATA = [];
+            break;
+        }
+
+    }
+
+
+    /*
+    |----------------------------------------------------------------
+    | getPrepareData function
+    |----------------------------------------------------------------
+    |
+    | @return instanceOf Factory
+    |
+    */
+    public static function getPrepareData(): array {
+
+        if( sizeof(self::$NISHADIL_UUID_PREPDATA) < 1 ):
+            self::setPrepareData();
+        endif;
+
+        return self::$NISHADIL_UUID_PREPDATA;
+
     }
 
 }
