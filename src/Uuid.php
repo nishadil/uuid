@@ -344,12 +344,15 @@ class Uuid{
     public static function setPrepareData(): void {
 
         switch (self::$NISHADIL_UUID_VERSION) {
-          case 1:
-            self::$NISHADIL_UUID_PREPDATA = ['NISHADIL_UUID_VERSION'=>self::$NISHADIL_UUID_VERSION,'NISHADIL_UUID_NODE'=>self::$NISHADIL_UUID_NODE,'NISHADIL_UUID_CLOCKSEQ'=>self::$NISHADIL_UUID_CLOCKSEQ];
-            break;
-          default:
-            self::$NISHADIL_UUID_PREPDATA = [];
-            break;
+            case 1:
+                self::$NISHADIL_UUID_PREPDATA = ['NISHADIL_UUID_VERSION'=>self::$NISHADIL_UUID_VERSION,'NISHADIL_UUID_NODE'=>self::$NISHADIL_UUID_NODE,'NISHADIL_UUID_CLOCKSEQ'=>self::$NISHADIL_UUID_CLOCKSEQ];
+                break;
+            case 4:
+                self::$NISHADIL_UUID_PREPDATA = ['NISHADIL_UUID_VERSION'=>self::$NISHADIL_UUID_VERSION,'NISHADIL_UUID_NODE'=>self::$NISHADIL_UUID_NODE,'NISHADIL_UUID_CLOCKSEQ'=>self::$NISHADIL_UUID_CLOCKSEQ];
+                break;
+            default:
+                self::$NISHADIL_UUID_PREPDATA = [];
+                break;
         }
 
     }

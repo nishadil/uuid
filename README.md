@@ -27,7 +27,7 @@ _(Technically it's not impossible that the same UUID you generate could be used 
 | v1 | `working` | UUIDs using date-time and MAC address |
 | v2 | `under development` | UUIDs using date-time and MAC address, DCE security version. |
 | v3 | `under development` | UUIDs based on the MD5 hash of some data. |
-| v4 | `under development` | UUIDs with random data. |
+| v4 | `working` | UUIDs with random data. |
 | v5 | `under development` | UUIDs based on the SHA1 hash of some data. |
 | v6 | `under development` | UUIDs using a timestamp and monotonic counter. |
 | v7 | `under development` | UUIDs using a Unix timestamp. |
