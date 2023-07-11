@@ -45,6 +45,20 @@ composer require nishadil/uuid
 ```
 
 
+## How to use
+
+```
+<?php
+
+require __DIR__.'/vendor/autoload.php';
+
+use Nishadil\Uuid\Uuid;
+
+echo Uuid::v1()->get();
+
+?>
+```
+
 
 ## License
 
