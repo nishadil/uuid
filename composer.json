@@ -5,6 +5,9 @@
     "require": {
         "php": "^8.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.0"
+    },
     "license": "MIT",
     "autoload": {
         "psr-4": {
@@ -13,8 +16,8 @@
     },
     "authors": [
         {
-            "name": "Nishadil Dev Team",
-            "email": "opensource@nishadil.com"
+            "name": "Nishadil.Dev",
+            "email": "opensource@nishadil.dev"
         }
     ],
     "minimum-stability": "dev"
