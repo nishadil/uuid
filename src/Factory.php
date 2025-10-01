@@ -2,52 +2,54 @@
 
 namespace Nishadil\Uuid;
 
+use Nishadil\Uuid\Exception\InvalidArgumentException;
+use Nishadil\Uuid\Exception\UuidException;
+
 use function extract;
 
 class Factory{
 
-    use UuidTrait;
+	use UuidTrait;
 
-    public function __construct(){
-    }
+	public function __construct(){
+	}
 
 
-    public static function generate( array $NISHADIL_UUID_PREPDATA ): ?string {
-        // return $NISHADIL_UUID_VERSION."-".$NISHADIL_UUID_NODE;
-        // return self::$UUIDv1->generate();
-        extract($NISHADIL_UUID_PREPDATA);
+	public static function generate( array $NISHADIL_UUID_PREPDATA ): ?string {
+		// Read version/node/clockseq from the prepared data and provide safe defaults.
+		$version = isset($NISHADIL_UUID_PREPDATA['NISHADIL_UUID_VERSION'])
+			? (int) $NISHADIL_UUID_PREPDATA['NISHADIL_UUID_VERSION']
+			: 1; // default to v1 for backward-compat / current tests
 
-        switch($NISHADIL_UUID_VERSION){
-          case 1:
-            return self::v1( $NISHADIL_UUID_VERSION, $NISHADIL_UUID_NODE, $NISHADIL_UUID_CLOCKSEQ );
-            break;
-          case 2:
-            return self::v2();
-            break;
-          case 3:
-            return self::v3();
-            break;
-          case 4:
-            return self::v4( $NISHADIL_UUID_VERSION, $NISHADIL_UUID_NODE, $NISHADIL_UUID_CLOCKSEQ );
-            break;
-          case 5:
-            return self::v5();
-            break;
-          case 6:
-            return self::v6();
-            break;
-          case 7:
-            return self::v7();
-            break;
-          case 8:
-            return self::v8();
-            break;
-          default:
-            return null;
-            break;
-        }
+		// Ensure version is in allowed range
+		if ($version < 1 || $version > 8) {
+			throw new InvalidArgumentException('Invalid UUID version requested: ' . $version);
+		}
 
-    }
+		$node = $NISHADIL_UUID_PREPDATA['NISHADIL_UUID_NODE'] ?? null;
+		$clockseq = $NISHADIL_UUID_PREPDATA['NISHADIL_UUID_CLOCKSEQ'] ?? null;
+
+		switch ($version) {
+			case 1:
+				return self::v1($version, $node, $clockseq);
+			case 2:
+				return self::v2($version, $node, $clockseq, $NISHADIL_UUID_PREPDATA);
+			case 3:
+				return self::v3($version, $node, $clockseq, $NISHADIL_UUID_PREPDATA);
+			case 4:
+				return self::v4($version, $node, $clockseq);
+			case 5:
+				return self::v5();
+			case 6:
+				return self::v6();
+			case 7:
+				return self::v7();
+			case 8:
+				return self::v8();
+			default:
+				return null;
+		}
+	}
 
 }
 
