@@ -40,11 +40,11 @@ class Factory{
 			case 5:
 				return self::v5($version, $node, $clockseq, $NISHADIL_UUID_PREPDATA);
 			case 6:
-				return self::v6();
+				return self::v6($version, $node, $clockseq, $NISHADIL_UUID_PREPDATA);
 			case 7:
-				return self::v7();
+				return self::v7($version, $node, $clockseq, $NISHADIL_UUID_PREPDATA);
 			case 8:
-				return self::v8();
+				return self::v8($version, $node, $clockseq, $NISHADIL_UUID_PREPDATA);
 			default:
 				return null;
 		}

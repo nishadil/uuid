@@ -29,9 +29,9 @@ _(Technically it's not impossible that the same UUID you generate could be used 
 | v3 | `working` | UUIDs based on the MD5 hash of some data. |
 | v4 | `working` | UUIDs with random data. |
 | v5 | `working` | UUIDs based on the SHA1 hash of some data. |
-| v6 | `under development` | UUIDs using a timestamp and monotonic counter. |
-| v7 | `under development` | UUIDs using a Unix timestamp. |
-| v8 | `under development` | UUIDs using user-defined data. |
+| v6 | `working` | UUIDs using a timestamp and monotonic counter. |
+| v7 | `working` | UUIDs using a Unix timestamp. |
+| v8 | `working` | UUIDs using user-defined data. |
 
 
 
@@ -70,6 +70,21 @@ echo Uuid::v3()
 echo Uuid::v5()
     ->withNamespace('6ba7b810-9dad-11d1-80b4-00c04fd430c8')
     ->withName('www.example.com')
+    ->get();
+```
+
+For time-ordered UUIDs (v6/v7):
+
+```
+echo Uuid::v6()->get();
+echo Uuid::v7()->get();
+```
+
+For custom UUIDs (v8), provide a 16-byte payload (or 32 hex chars):
+
+```
+echo Uuid::v8()
+    ->withCustomHex('00112233445566778899aabbccddeeff')
     ->get();
 ```
 

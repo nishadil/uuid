@@ -49,6 +49,10 @@ class Uuid{
 
 
 
+	protected static ?string $NISHADIL_UUID_CUSTOM_HEX = null;
+
+
+
 	protected static string $NISHADIL_UUID_PATTERN = '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$';
 
 
@@ -66,6 +70,7 @@ class Uuid{
 		self::$NISHADIL_UUID_NAME = null;
 		self::$NISHADIL_UUID_LOCAL_DOMAIN = null;
 		self::$NISHADIL_UUID_LOCAL_ID = null;
+		self::$NISHADIL_UUID_CUSTOM_HEX = null;
 	}
 
 
@@ -218,9 +223,13 @@ class Uuid{
 	| @return string
 	| @throws Exception
 	*/
-	public static function v8(): self {
+	public static function v8(?string $customHex = null): self {
 		self::setUUIDversion(8);
-		return new self;
+		$instance = new self;
+		if ($customHex !== null) {
+			$instance->withCustomHex($customHex);
+		}
+		return $instance;
 	}
 
 
@@ -409,9 +418,16 @@ class Uuid{
 				self::$NISHADIL_UUID_PREPDATA = ['NISHADIL_UUID_VERSION'=>self::$NISHADIL_UUID_VERSION,'NISHADIL_UUID_NODE'=>self::$NISHADIL_UUID_NODE,'NISHADIL_UUID_CLOCKSEQ'=>self::$NISHADIL_UUID_CLOCKSEQ];
 				break;
 			case 6:
+				self::$NISHADIL_UUID_PREPDATA = ['NISHADIL_UUID_VERSION'=>self::$NISHADIL_UUID_VERSION,'NISHADIL_UUID_NODE'=>self::$NISHADIL_UUID_NODE,'NISHADIL_UUID_CLOCKSEQ'=>self::$NISHADIL_UUID_CLOCKSEQ];
+				break;
 			case 7:
-			case 8:
 				self::$NISHADIL_UUID_PREPDATA = ['NISHADIL_UUID_VERSION'=>self::$NISHADIL_UUID_VERSION];
+				break;
+			case 8:
+				if (empty(self::$NISHADIL_UUID_CUSTOM_HEX)) {
+					throw new InvalidArgumentException('NISHADIL_UUID_CUSTOM_HEX is required for v8');
+				}
+				self::$NISHADIL_UUID_PREPDATA = ['NISHADIL_UUID_VERSION'=>self::$NISHADIL_UUID_VERSION,'NISHADIL_UUID_CUSTOM_HEX'=>self::$NISHADIL_UUID_CUSTOM_HEX];
 				break;
 			default:
 				self::$NISHADIL_UUID_PREPDATA = [];
@@ -485,6 +501,25 @@ class Uuid{
 
 	public function withLocalId(int $localId): self {
 		self::$NISHADIL_UUID_LOCAL_ID = $localId;
+		return $this;
+	}
+
+
+	public function withCustomHex(string $customHex): self {
+		$customHex = preg_replace('/[^0-9a-fA-F]/', '', $customHex);
+		if (strlen($customHex) !== 32) {
+			throw new InvalidArgumentException('custom hex must be 32 hex characters');
+		}
+		self::$NISHADIL_UUID_CUSTOM_HEX = $customHex;
+		return $this;
+	}
+
+
+	public function withCustomBytes(string $customBytes): self {
+		if (strlen($customBytes) !== 16) {
+			throw new InvalidArgumentException('custom bytes must be 16 bytes');
+		}
+		self::$NISHADIL_UUID_CUSTOM_HEX = bin2hex($customBytes);
 		return $this;
 	}
 

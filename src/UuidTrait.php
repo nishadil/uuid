@@ -276,16 +276,92 @@ trait UuidTrait{
         return self::uuidOutput((int)$NISHADIL_UUID_VERSION, (string)$hex);
     }
 
-    public static function v6(){
-        throw new \Nishadil\Uuid\Exception\InvalidArgumentException('UUID version 6 is not implemented');
+    public static function v6( $NISHADIL_UUID_VERSION, $NISHADIL_UUID_NODE = null, $NISHADIL_UUID_CLOCKSEQ = null, $prep = null ){
+        $timeHex = self::getUuidTime();
+        if (strlen($timeHex) !== 16) {
+            $timeHex = str_pad($timeHex, 16, '0', STR_PAD_LEFT);
+        }
+
+        $timeHex60 = substr($timeHex, 1); // drop the top nibble to get 60-bit timestamp
+        $timeHigh = substr($timeHex60, 0, 8);
+        $timeMid = substr($timeHex60, 8, 4);
+        $timeLow = substr($timeHex60, 12, 3);
+        $timeHiAndVersion = '0' . $timeLow;
+
+        if (is_null($NISHADIL_UUID_CLOCKSEQ)) {
+            $NISHADIL_UUID_CLOCKSEQ = random_int(0, 0x3fff);
+        } else {
+            $NISHADIL_UUID_CLOCKSEQ = (int) $NISHADIL_UUID_CLOCKSEQ;
+            if ($NISHADIL_UUID_CLOCKSEQ < 0 || $NISHADIL_UUID_CLOCKSEQ > 0x3fff) {
+                throw new \Nishadil\Uuid\Exception\InvalidArgumentException('clockseq must be between 0 and 0x3fff');
+            }
+        }
+        $clockSeqHex = sprintf('%04x', $NISHADIL_UUID_CLOCKSEQ);
+
+        if (empty($NISHADIL_UUID_NODE)) {
+            $nodeHex = Uuid::getNode();
+        } else {
+            $nodeHex = preg_replace('/[^0-9a-fA-F]/', '', (string)$NISHADIL_UUID_NODE);
+            if (strlen($nodeHex) !== 12) {
+                throw new \Nishadil\Uuid\Exception\InvalidArgumentException('node must be 12 hex characters (48-bit)');
+            }
+        }
+
+        $hex = $timeHigh . $timeMid . $timeHiAndVersion . $clockSeqHex . $nodeHex;
+
+        return self::uuidOutput((int)$NISHADIL_UUID_VERSION, (string)$hex);
     }
 
-    public static function v7(){
-        throw new \Nishadil\Uuid\Exception\InvalidArgumentException('UUID version 7 is not implemented');
+    public static function v7( $NISHADIL_UUID_VERSION, $NISHADIL_UUID_NODE = null, $NISHADIL_UUID_CLOCKSEQ = null, $prep = null ){
+        $timeMs = (int) (microtime(true) * 1000);
+        if ($timeMs < 0 || $timeMs > 0xffffffffffff) {
+            throw new \Nishadil\Uuid\Exception\InvalidArgumentException('timestamp out of range for v7');
+        }
+
+        $timeHex = sprintf('%012x', $timeMs);
+        $timeLow = substr($timeHex, 0, 8);
+        $timeMid = substr($timeHex, 8, 4);
+
+        $randA = random_int(0, 0xfff);
+        $randAHex = sprintf('%03x', $randA);
+        $timeHiAndVersion = '0' . $randAHex;
+
+        $randB = random_bytes(8);
+        $randB[0] = chr(ord($randB[0]) & 0x3f); // clear top 2 bits; uuidOutput sets RFC variant
+        $randBHex = bin2hex($randB);
+
+        $clockSeqHex = substr($randBHex, 0, 4);
+        $nodeHex = substr($randBHex, 4, 12);
+
+        $hex = $timeLow . $timeMid . $timeHiAndVersion . $clockSeqHex . $nodeHex;
+
+        return self::uuidOutput((int)$NISHADIL_UUID_VERSION, (string)$hex);
     }
 
-    public static function v8(){
-        throw new \Nishadil\Uuid\Exception\InvalidArgumentException('UUID version 8 is not implemented');
+    public static function v8( $NISHADIL_UUID_VERSION, $NISHADIL_UUID_NODE = null, $NISHADIL_UUID_CLOCKSEQ = null, $prep = null ){
+        if (!is_array($prep)) {
+            throw new \Nishadil\Uuid\Exception\InvalidArgumentException('v8 requires custom data');
+        }
+
+        $customHex = $prep['NISHADIL_UUID_CUSTOM_HEX'] ?? null;
+        if ($customHex === null && isset($prep['NISHADIL_UUID_CUSTOM_BYTES'])) {
+            $customBytes = $prep['NISHADIL_UUID_CUSTOM_BYTES'];
+            if (!is_string($customBytes) || strlen($customBytes) !== 16) {
+                throw new \Nishadil\Uuid\Exception\InvalidArgumentException('NISHADIL_UUID_CUSTOM_BYTES must be 16 bytes');
+            }
+            $customHex = bin2hex($customBytes);
+        }
+
+        if ($customHex === null) {
+            throw new \Nishadil\Uuid\Exception\InvalidArgumentException('NISHADIL_UUID_CUSTOM_HEX is required for v8');
+        }
+
+        $customHex = preg_replace('/[^0-9a-fA-F]/', '', (string)$customHex);
+        if (strlen($customHex) !== 32) {
+            throw new \Nishadil\Uuid\Exception\InvalidArgumentException('NISHADIL_UUID_CUSTOM_HEX must be 32 hex characters');
+        }
+
+        return self::uuidOutput((int)$NISHADIL_UUID_VERSION, (string)$customHex);
     }
 
 
