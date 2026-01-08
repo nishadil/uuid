@@ -47,43 +47,70 @@ composer require nishadil/uuid
 
 ## How to use
 
-```
-<?php
+Autoload the library once:
 
+```php
+<?php
 require __DIR__.'/vendor/autoload.php';
 
 use Nishadil\Uuid\Uuid;
-
-echo Uuid::v1()->get();
-
-?>
 ```
 
-For name-based UUIDs (v3/v5), provide a namespace and name:
+v1 (time-based):
 
+```php
+$uuidV1 = Uuid::v1()->get();
 ```
-echo Uuid::v3()
-    ->withNamespace('6ba7b810-9dad-11d1-80b4-00c04fd430c8')
-    ->withName('www.example.com')
-    ->get();
 
-echo Uuid::v5()
-    ->withNamespace('6ba7b810-9dad-11d1-80b4-00c04fd430c8')
-    ->withName('www.example.com')
+v2 (DCE security, UID/GID domain):
+
+```php
+$uuidV2 = Uuid::v2()
+    ->withLocalDomain('uid') // or 'gid'
+    ->withLocalId(1000)
     ->get();
 ```
 
-For time-ordered UUIDs (v6/v7):
+v3 (name-based, MD5):
 
-```
-echo Uuid::v6()->get();
-echo Uuid::v7()->get();
+```php
+$uuidV3 = Uuid::v3()
+    ->withNamespace('6ba7b810-9dad-11d1-80b4-00c04fd430c8')
+    ->withName('www.example.com')
+    ->get();
 ```
 
-For custom UUIDs (v8), provide a 16-byte payload (or 32 hex chars):
+v4 (random):
 
+```php
+$uuidV4 = Uuid::v4()->get();
 ```
-echo Uuid::v8()
+
+v5 (name-based, SHA1):
+
+```php
+$uuidV5 = Uuid::v5()
+    ->withNamespace('6ba7b810-9dad-11d1-80b4-00c04fd430c8')
+    ->withName('www.example.com')
+    ->get();
+```
+
+v6 (reordered time-based):
+
+```php
+$uuidV6 = Uuid::v6()->get();
+```
+
+v7 (Unix time, ms):
+
+```php
+$uuidV7 = Uuid::v7()->get();
+```
+
+v8 (custom data, 16 bytes / 32 hex chars):
+
+```php
+$uuidV8 = Uuid::v8()
     ->withCustomHex('00112233445566778899aabbccddeeff')
     ->get();
 ```
