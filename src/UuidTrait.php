@@ -75,13 +75,14 @@ trait UuidTrait{
         // Build initial uuid binary layout as v1 does: reorder timestamp bytes
         // bytes[4..7] -> time_low (4), bytes[2..3] -> time_mid (2), bytes[0..1] -> time_hi (2)
         if (strlen($timeBin) !== 8) {
-            throw new \Nishadil\Uuid\Exception\UuidException('unexpected timestamp length for v2');
+            throw new \Nishadil\Uuid\Exception\InvalidArgumentException('unexpected timestamp length for v2');
         }
         $uuid = $timeBin[4] . $timeBin[5] . $timeBin[6] . $timeBin[7] . $timeBin[2] . $timeBin[3] . $timeBin[0] . $timeBin[1];
 
         // Determine local domain and local id.
         $domain = null;
         $localId = null;
+        $clockseq = $NISHADIL_UUID_CLOCKSEQ;
 
         // 1) If $prep provided and contains keys, prefer them
         if (is_array($prep)) {
@@ -101,6 +102,7 @@ trait UuidTrait{
             if (isset($NISHADIL_UUID_CLOCKSEQ['local_id'])) {
                 $localId = (int)$NISHADIL_UUID_CLOCKSEQ['local_id'];
             }
+            $clockseq = null;
         }
 
         // Normalize domain: accept some textual shortcuts
@@ -118,6 +120,10 @@ trait UuidTrait{
         // Default domain -> 0 (UID)
         if ($domain === null) {
             $domain = 0;
+        }
+        $domain = (int) $domain;
+        if ($domain < 0 || $domain > 0xff) {
+            throw new \Nishadil\Uuid\Exception\InvalidArgumentException('local domain must be between 0 and 255');
         }
 
         // Determine localId if not provided
@@ -144,17 +150,17 @@ trait UuidTrait{
         $uuid = $timeLowBin . substr($uuid, 4); // keep bytes 4..end
 
         // Handle clock sequence: generate if not provided
-        if (is_null($NISHADIL_UUID_CLOCKSEQ) || (is_int($NISHADIL_UUID_CLOCKSEQ) && $NISHADIL_UUID_CLOCKSEQ === 0)) {
-            $NISHADIL_UUID_CLOCKSEQ = random_int(0, 0x3fff);
-        } elseif (is_int($NISHADIL_UUID_CLOCKSEQ)) {
-            $NISHADIL_UUID_CLOCKSEQ = (int)$NISHADIL_UUID_CLOCKSEQ;
-            if ($NISHADIL_UUID_CLOCKSEQ < 0 || $NISHADIL_UUID_CLOCKSEQ > 0x3fff) {
+        if ($clockseq === null) {
+            $clockseq = random_int(0, 0x3fff);
+        } else {
+            $clockseq = (int)$clockseq;
+            if ($clockseq < 0 || $clockseq > 0x3fff) {
                 throw new \Nishadil\Uuid\Exception\InvalidArgumentException('clockseq must be between 0 and 0x3fff');
             }
         }
 
         // Replace the least significant 8 bits of the clock sequence with domain per DCE spec
-        $clockseqWithDomain = (($NISHADIL_UUID_CLOCKSEQ & 0xff00) | ($domain & 0xff));
+        $clockseqWithDomain = (($clockseq & 0xff00) | ($domain & 0xff));
 
         // append clockseq as network-order 2 bytes
         $uuid .= pack('n', $clockseqWithDomain);
@@ -229,26 +235,57 @@ trait UuidTrait{
 	}
 
     public static function v4( $NISHADIL_UUID_VERSION, $NISHADIL_UUID_NODE, $NISHADIL_UUID_CLOCKSEQ ){
-        $v4bytes = bin2hex(random_bytes(16));
-        $v4bytes = (string) hex2bin($v4bytes);
+        $randomBytes = random_bytes(16);
+        $hex = bin2hex($randomBytes);
 
-        return self::bytesToVersionAndVariant($v4bytes, $NISHADIL_UUID_VERSION, $NISHADIL_UUID_NODE, $NISHADIL_UUID_CLOCKSEQ);
+        return self::uuidOutput((int)$NISHADIL_UUID_VERSION, (string)$hex);
     }
 
-    public static function v5(){
-        return "V5-under development";
+    public static function v5( $NISHADIL_UUID_VERSION, $NISHADIL_UUID_NODE = null, $NISHADIL_UUID_CLOCKSEQ = null, $prep = null ){
+        if (!is_array($prep)) {
+            throw new \Nishadil\Uuid\Exception\InvalidArgumentException('v5 requires prepared data with NISHADIL_UUID_NAMESPACE and NISHADIL_UUID_NAME');
+        }
+
+        if (empty($prep['NISHADIL_UUID_NAMESPACE'])) {
+            throw new \Nishadil\Uuid\Exception\InvalidArgumentException('NISHADIL_UUID_NAMESPACE is required for v5');
+        }
+        if (!isset($prep['NISHADIL_UUID_NAME'])) {
+            throw new \Nishadil\Uuid\Exception\InvalidArgumentException('NISHADIL_UUID_NAME is required for v5');
+        }
+
+        $ns = (string)$prep['NISHADIL_UUID_NAMESPACE'];
+        $name = (string)$prep['NISHADIL_UUID_NAME'];
+
+        $nsHex = preg_replace('/[^0-9a-fA-F]/', '', $ns);
+        if (strlen($nsHex) !== 32) {
+            throw new \Nishadil\Uuid\Exception\InvalidArgumentException('NISHADIL_UUID_NAMESPACE must be a valid UUID (36-char canonical or 32-char hex)');
+        }
+        $nsBin = hex2bin($nsHex);
+        if ($nsBin === false) {
+            throw new \Nishadil\Uuid\Exception\InvalidArgumentException('Invalid namespace hex for v5');
+        }
+
+        $raw = sha1($nsBin . $name, true); // 20 bytes
+        $raw = substr($raw, 0, 16);
+
+        $raw[6] = chr((ord($raw[6]) & 0x0f) | ( ( (int)$NISHADIL_UUID_VERSION & 0x0f ) << 4 ));
+        $raw[8] = chr((ord($raw[8]) & 0x3f) | 0x80);
+
+        $hex = bin2hex($raw);
+
+        return self::uuidOutput((int)$NISHADIL_UUID_VERSION, (string)$hex);
     }
 
     public static function v6(){
-        return "V6-under development";
+        throw new \Nishadil\Uuid\Exception\InvalidArgumentException('UUID version 6 is not implemented');
     }
 
     public static function v7(){
-        return "V7-under development";
+        throw new \Nishadil\Uuid\Exception\InvalidArgumentException('UUID version 7 is not implemented');
     }
 
     public static function v8(){
-        return "V8-under development";
+        throw new \Nishadil\Uuid\Exception\InvalidArgumentException('UUID version 8 is not implemented');
     }
 
 

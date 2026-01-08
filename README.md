@@ -28,7 +28,7 @@ _(Technically it's not impossible that the same UUID you generate could be used 
 | v2 | `working` | UUIDs using date-time and MAC address, DCE security version. |
 | v3 | `working` | UUIDs based on the MD5 hash of some data. |
 | v4 | `working` | UUIDs with random data. |
-| v5 | `under development` | UUIDs based on the SHA1 hash of some data. |
+| v5 | `working` | UUIDs based on the SHA1 hash of some data. |
 | v6 | `under development` | UUIDs using a timestamp and monotonic counter. |
 | v7 | `under development` | UUIDs using a Unix timestamp. |
 | v8 | `under development` | UUIDs using user-defined data. |
@@ -57,6 +57,20 @@ use Nishadil\Uuid\Uuid;
 echo Uuid::v1()->get();
 
 ?>
+```
+
+For name-based UUIDs (v3/v5), provide a namespace and name:
+
+```
+echo Uuid::v3()
+    ->withNamespace('6ba7b810-9dad-11d1-80b4-00c04fd430c8')
+    ->withName('www.example.com')
+    ->get();
+
+echo Uuid::v5()
+    ->withNamespace('6ba7b810-9dad-11d1-80b4-00c04fd430c8')
+    ->withName('www.example.com')
+    ->get();
 ```
 
 

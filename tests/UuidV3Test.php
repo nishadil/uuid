@@ -22,6 +22,20 @@ final class UuidV3Test extends TestCase
         );
     }
 
+    public function testV3FluentApi()
+    {
+        $uuid = \Nishadil\Uuid\Uuid::v3()
+            ->withNamespace('6ba7b810-9dad-11d1-80b4-00c04fd430c8')
+            ->withName('www.example.com')
+            ->get();
+
+        $this->assertMatchesRegularExpression(
+            '/^[0-9a-f]{8}-[0-9a-f]{4}-3[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
+            $uuid,
+            "UUID v3 should match RFC-4122 v3 pattern via fluent API"
+        );
+    }
+
     public function testV3Deterministic()
     {
         $ns = '6ba7b810-9dad-11d1-80b4-00c04fd430c8'; // DNS namespace (RFC)
@@ -75,5 +89,11 @@ final class UuidV3Test extends TestCase
 
         $this->assertMatchesRegularExpression('/^3[0-9a-f]{3}$/i', $parts[2], 'Version nibble must be 3 for v3');
         $this->assertMatchesRegularExpression('/^[89ab][0-9a-f]{3}$/i', $parts[3], 'Variant must be RFC 4122 (8,9,a,b)');
+    }
+
+    public function testV3RequiresNamespaceAndName()
+    {
+        $this->expectException(\Nishadil\Uuid\Exception\InvalidArgumentException::class);
+        \Nishadil\Uuid\Uuid::v3()->get();
     }
 }

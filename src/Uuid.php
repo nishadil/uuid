@@ -17,19 +17,35 @@ class Uuid{
 	| Class variables using for UUID generation
 	|
 	*/
-	protected static array $NISHADIL_UUID_PREPDATA;
+	protected static ?array $NISHADIL_UUID_PREPDATA = null;
 
 
 
-	protected static int $NISHADIL_UUID_VERSION;
+	protected static ?int $NISHADIL_UUID_VERSION = null;
 
 
 
-	protected static string $NISHADIL_UUID_NODE;
+	protected static ?string $NISHADIL_UUID_NODE = null;
 
 
 
-	protected static int $NISHADIL_UUID_CLOCKSEQ;
+	protected static ?int $NISHADIL_UUID_CLOCKSEQ = null;
+
+
+
+	protected static ?string $NISHADIL_UUID_NAMESPACE = null;
+
+
+
+	protected static ?string $NISHADIL_UUID_NAME = null;
+
+
+
+	protected static ?int $NISHADIL_UUID_LOCAL_DOMAIN = null;
+
+
+
+	protected static ?int $NISHADIL_UUID_LOCAL_ID = null;
 
 
 
@@ -44,8 +60,12 @@ class Uuid{
 	function __construct() {
 		self::setNode();
 		self::setFactory();
-		self::$NISHADIL_UUID_PREPDATA = [];
+		self::$NISHADIL_UUID_PREPDATA = null;
 		self::$NISHADIL_UUID_CLOCKSEQ = random_int(0, 0x3fff);
+		self::$NISHADIL_UUID_NAMESPACE = null;
+		self::$NISHADIL_UUID_NAME = null;
+		self::$NISHADIL_UUID_LOCAL_DOMAIN = null;
+		self::$NISHADIL_UUID_LOCAL_ID = null;
 	}
 
 
@@ -97,9 +117,16 @@ class Uuid{
 	| @return string
 	| @throws Exception
 	*/
-	public static function v3(): self {
+	public static function v3(?string $namespace = null, ?string $name = null): self {
 		self::setUUIDversion(3);
-		return new self;
+		$instance = new self;
+		if ($namespace !== null) {
+			$instance->withNamespace($namespace);
+		}
+		if ($name !== null) {
+			$instance->withName($name);
+		}
+		return $instance;
 	}
 
 
@@ -131,9 +158,16 @@ class Uuid{
 	| @return string
 	| @throws Exception
 	*/
-	public static function v5(): self {
+	public static function v5(?string $namespace = null, ?string $name = null): self {
 		self::setUUIDversion(5);
-		return new self;
+		$instance = new self;
+		if ($namespace !== null) {
+			$instance->withNamespace($namespace);
+		}
+		if ($name !== null) {
+			$instance->withName($name);
+		}
+		return $instance;
 	}
 
 
@@ -234,7 +268,7 @@ class Uuid{
 	*/
 	public static function getNode(): string {
 
-		if( !self::$NISHADIL_UUID_NODE ):
+		if( self::$NISHADIL_UUID_NODE === null ):
 			self::setNode();
 		endif;
 
@@ -267,13 +301,13 @@ class Uuid{
 	| getUUIDversion function
 	|----------------------------------------------------------------
 	|
-	| @return string
+	| @return int
 	|
 	*/
-	public static function getUUIDversion(): string {
+	public static function getUUIDversion(): int {
 
-		if( !self::$NISHADIL_UUID_VERSION ):
-			self::setUUIDversion();
+		if( self::$NISHADIL_UUID_VERSION === null ):
+			throw new InvalidArgumentException('UUID version is not set');
 		endif;
 
 		return self::$NISHADIL_UUID_VERSION;
@@ -291,6 +325,9 @@ class Uuid{
 	|
 	*/
 	public static function setUUIDversion(int $version = 1): void {
+		if ($version < 1 || $version > 8) {
+			throw new InvalidArgumentException('UUID version must be between 1 and 8');
+		}
 		self::$NISHADIL_UUID_VERSION = $version;
 	}
 
@@ -341,6 +378,9 @@ class Uuid{
 	|
 	*/
 	public static function setPrepareData(): void {
+		if (self::$NISHADIL_UUID_VERSION === null) {
+			throw new InvalidArgumentException('UUID version must be set before generation');
+		}
 
 		switch (self::$NISHADIL_UUID_VERSION) {
 			case 1:
@@ -348,9 +388,30 @@ class Uuid{
 				break;
 			case 2:
 				self::$NISHADIL_UUID_PREPDATA = ['NISHADIL_UUID_VERSION'=>self::$NISHADIL_UUID_VERSION,'NISHADIL_UUID_NODE'=>self::$NISHADIL_UUID_NODE,'NISHADIL_UUID_CLOCKSEQ'=>self::$NISHADIL_UUID_CLOCKSEQ];
+				if (self::$NISHADIL_UUID_LOCAL_DOMAIN !== null) {
+					self::$NISHADIL_UUID_PREPDATA['NISHADIL_UUID_LOCAL_DOMAIN'] = self::$NISHADIL_UUID_LOCAL_DOMAIN;
+				}
+				if (self::$NISHADIL_UUID_LOCAL_ID !== null) {
+					self::$NISHADIL_UUID_PREPDATA['NISHADIL_UUID_LOCAL_ID'] = self::$NISHADIL_UUID_LOCAL_ID;
+				}
+				break;
+			case 3:
+			case 5:
+				if (empty(self::$NISHADIL_UUID_NAMESPACE)) {
+					throw new InvalidArgumentException('NISHADIL_UUID_NAMESPACE is required for v' . self::$NISHADIL_UUID_VERSION);
+				}
+				if (self::$NISHADIL_UUID_NAME === null) {
+					throw new InvalidArgumentException('NISHADIL_UUID_NAME is required for v' . self::$NISHADIL_UUID_VERSION);
+				}
+				self::$NISHADIL_UUID_PREPDATA = ['NISHADIL_UUID_VERSION'=>self::$NISHADIL_UUID_VERSION,'NISHADIL_UUID_NAMESPACE'=>self::$NISHADIL_UUID_NAMESPACE,'NISHADIL_UUID_NAME'=>self::$NISHADIL_UUID_NAME];
 				break;
 			case 4:
 				self::$NISHADIL_UUID_PREPDATA = ['NISHADIL_UUID_VERSION'=>self::$NISHADIL_UUID_VERSION,'NISHADIL_UUID_NODE'=>self::$NISHADIL_UUID_NODE,'NISHADIL_UUID_CLOCKSEQ'=>self::$NISHADIL_UUID_CLOCKSEQ];
+				break;
+			case 6:
+			case 7:
+			case 8:
+				self::$NISHADIL_UUID_PREPDATA = ['NISHADIL_UUID_VERSION'=>self::$NISHADIL_UUID_VERSION];
 				break;
 			default:
 				self::$NISHADIL_UUID_PREPDATA = [];
@@ -365,21 +426,65 @@ class Uuid{
 	| getPrepareData function
 	|----------------------------------------------------------------
 	|
-	| @return instanceOf Factory
+	| @return array
 	|
 	*/
 	public static function getPrepareData(): array {
 
-		if( sizeof(self::$NISHADIL_UUID_PREPDATA) < 1 ):
+		if( self::$NISHADIL_UUID_PREPDATA === null ):
 			self::setPrepareData();
 		endif;
 
-		return self::$NISHADIL_UUID_PREPDATA;
+		return self::$NISHADIL_UUID_PREPDATA ?? [];
 	}
 
 
 	public function withNode(string $hexNode): self {
 		self::$NISHADIL_UUID_NODE = $hexNode;
+		return $this;
+	}
+
+
+	public function withClockSeq(int $clockSeq): self {
+		self::$NISHADIL_UUID_CLOCKSEQ = $clockSeq;
+		return $this;
+	}
+
+
+	public function withNamespace(string $namespace): self {
+		self::$NISHADIL_UUID_NAMESPACE = $namespace;
+		return $this;
+	}
+
+
+	public function withName(string $name): self {
+		self::$NISHADIL_UUID_NAME = $name;
+		return $this;
+	}
+
+
+	public function withLocalDomain($domain): self {
+		if ($domain === null) {
+			self::$NISHADIL_UUID_LOCAL_DOMAIN = null;
+			return $this;
+		}
+
+		if (is_string($domain)) {
+			$domainLower = strtolower($domain);
+			if ($domainLower === 'uid' || $domainLower === 'user') {
+				$domain = 0;
+			} elseif ($domainLower === 'gid' || $domainLower === 'group') {
+				$domain = 1;
+			}
+		}
+
+		self::$NISHADIL_UUID_LOCAL_DOMAIN = (int) $domain;
+		return $this;
+	}
+
+
+	public function withLocalId(int $localId): self {
+		self::$NISHADIL_UUID_LOCAL_ID = $localId;
 		return $this;
 	}
 

@@ -3,9 +3,6 @@
 namespace Nishadil\Uuid;
 
 use Nishadil\Uuid\Exception\InvalidArgumentException;
-use Nishadil\Uuid\Exception\UuidException;
-
-use function extract;
 
 class Factory{
 
@@ -16,10 +13,12 @@ class Factory{
 
 
 	public static function generate( array $NISHADIL_UUID_PREPDATA ): ?string {
-		// Read version/node/clockseq from the prepared data and provide safe defaults.
-		$version = isset($NISHADIL_UUID_PREPDATA['NISHADIL_UUID_VERSION'])
-			? (int) $NISHADIL_UUID_PREPDATA['NISHADIL_UUID_VERSION']
-			: 1; // default to v1 for backward-compat / current tests
+		if (!array_key_exists('NISHADIL_UUID_VERSION', $NISHADIL_UUID_PREPDATA)) {
+			throw new InvalidArgumentException('UUID version must be specified');
+		}
+
+		// Read version/node/clockseq from the prepared data.
+		$version = (int) $NISHADIL_UUID_PREPDATA['NISHADIL_UUID_VERSION'];
 
 		// Ensure version is in allowed range
 		if ($version < 1 || $version > 8) {
@@ -39,7 +38,7 @@ class Factory{
 			case 4:
 				return self::v4($version, $node, $clockseq);
 			case 5:
-				return self::v5();
+				return self::v5($version, $node, $clockseq, $NISHADIL_UUID_PREPDATA);
 			case 6:
 				return self::v6();
 			case 7:
